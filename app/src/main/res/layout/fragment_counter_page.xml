@@ -28,7 +28,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             style="@style/TextAppearance.Material3.HeadlineSmall"
-            android:text="Sample counter"
+            tools:text="Sample counter"
+            android:text = "@{viewModel.counterName}"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             />
 

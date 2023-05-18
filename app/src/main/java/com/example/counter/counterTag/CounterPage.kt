@@ -5,9 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.counter.models.Tags
 import com.example.counter.R
+import com.example.counter.dataBase.Database
 import com.example.counter.databinding.FragmentCounterPageBinding
 
 class CounterPage : Fragment() {
@@ -20,12 +22,20 @@ class CounterPage : Fragment() {
 
         val binding =  FragmentCounterPageBinding.inflate(layoutInflater)
 
-        val viewModel = CounterViewModel()
+        val database = Database.getInstance(requireContext())
+
+        val viewModel = CounterViewModel(database)
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        binding.tagList.adapter = TagAdapter(listOf(Tags("tagName", 1, "counterName")))
+        val adapter = TagAdapter()
+
+        binding.tagList.adapter = adapter
+
+        viewModel.tagList.observe(viewLifecycleOwner, Observer {
+          adapter.submitList(it)
+        })
 
         binding.tagList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
