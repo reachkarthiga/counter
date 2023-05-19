@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Settings">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:id = "@+id/toolbar"
+        android:background = "@color/color_primary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@color/white"
+        app:title="Settings"/>
+
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:text = "Reset"
+        android:textColor = "@color/black"
+        android:layout_margin="16dp"
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:id = "@+id/reset"/>
 
-</FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/reset"
+        android:text = "Delete All Tags"
+        android:textColor = "@color/black"
+        android:layout_margin="16dp"
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:id = "@+id/delete_tags"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
