@@ -24,11 +24,11 @@ interface  CounterDao {
     @Query("UPDATE counters set tagsCount = (tagsCount+1) where name = :counterName")
     fun increaseTagCount(counterName: String)
 
-    @Query("SELECT * FROM counters")
+    @Query("SELECT * FROM counters where name <> \"Untitled\"")
     fun getCounters() :LiveData<List<Counter>>
 
     @Query("SELECT * FROM counters where name = :counterName")
-    fun getCounterByName(counterName:String) : LiveData<Counter>
+    fun getCounterByName(counterName:String) : Counter
 
     @Query("DELETE FROM counters where name = :counterName")
     fun clearTempCounter(counterName:String)

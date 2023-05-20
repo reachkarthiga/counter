@@ -21,6 +21,9 @@ class CounterViewModel(val database: Database) : ViewModel() {
             database.tagDao.getTagsByName(it)
         }
 
+    val counterList: LiveData<List<Counter>>
+        get() = database.counterDao.getCounters()
+
     private val _counterName = MutableLiveData<String>()
     val counterName: LiveData<String>
         get() = _counterName
@@ -39,18 +42,22 @@ class CounterViewModel(val database: Database) : ViewModel() {
         _counterName.value = TEMPORARY_COUNTER
 
         viewModelScope.launch {
-            count.value = database.counterDao.getCountValue(TEMPORARY_COUNTER)
-        }
 
-        if (count.value == 0) {
-            viewModelScope.launch {
+            val counter :Counter = database.counterDao.getCounterByName(TEMPORARY_COUNTER)
+
+            if (counter == null) {
                 database.counterDao.insertCounter(
                     Counter(
                         TEMPORARY_COUNTER,
-                        count.value.toString().toInt(),
+                        0,
                         0
                     )
                 )
+
+                count.value = 0
+
+            } else {
+                count.value = counter.count
             }
         }
 
@@ -115,6 +122,11 @@ class CounterViewModel(val database: Database) : ViewModel() {
                         tagsCount
                     )
                 )
+
+                val counter = database.counterDao.getCounterByName(TEMPORARY_COUNTER)
+
+                database.counterDao.deleteCounter(counter)
+
             }
 
             viewModelScope.launch {
@@ -150,6 +162,18 @@ class CounterViewModel(val database: Database) : ViewModel() {
         }
 
         return isAlreadyTagged
+    }
+
+    fun updateNewCounterName(counterName: String) {
+        _counterName.value = counterName
+        count.value = 0
+    }
+
+    fun setCounterValues(counterName: String) {
+        viewModelScope.launch {
+            _counterName.value = counterName
+            count.value = database.counterDao.getCountValue(counterName)
+        }
     }
 
 }

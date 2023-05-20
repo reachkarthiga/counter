@@ -3,10 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
    >
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.counter.models.Counter" />
+
+        <variable
+            name="clickListener"
+            type="com.example.counter.savedCounters.CounterClickListener" />
+    </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:onClick="@{() -> clickListener.onClick(viewModel)}">
 
     <TextView
         android:layout_width="0dp"
@@ -14,6 +25,7 @@
         android:layout_height="wrap_content"
         android:id = "@+id/counter_name"
         tools:text = "Sample counter"
+        android:text = "@{viewModel.name}"
         style="@style/text_list"
         android:layout_marginTop = "@dimen/margin_border"
         android:layout_marginBottom = "@dimen/margin_border"/>
@@ -26,6 +38,7 @@
         android:id = "@+id/counter_count"
         tools:text = "42"
         style="@style/text_list"
+        android:text="@{String.valueOf(viewModel.count)}"
         android:layout_marginTop = "@dimen/margin_border"
         android:layout_marginBottom = "@dimen/margin_border"/>
 

@@ -6,6 +6,11 @@
     tools:context=".savedCounters.SavedCounters">
 
 
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.counter.counterTag.CounterViewModel" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_data_counters"
+            android:id = "@+id/no_counter_data"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -44,6 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_border"
+            android:id = "@+id/add_new"
             android:backgroundTint="@color/color_button"
             android:src="@drawable/ic_baseline_add_24"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -17,10 +17,11 @@ import com.example.counter.R
 import com.example.counter.dataBase.Database
 import com.example.counter.databinding.FragmentCounterPageBinding
 import com.example.counter.databinding.SaveCounterDialogBinding
+import org.koin.android.ext.android.inject
 
 class CounterPage : Fragment() {
 
-    private lateinit var viewModel: CounterViewModel
+    val viewModel: CounterViewModel by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,10 +29,6 @@ class CounterPage : Fragment() {
     ): View? {
 
         val binding = FragmentCounterPageBinding.inflate(layoutInflater)
-
-        val database = Database.getInstance(requireContext())
-
-        viewModel = CounterViewModel(database)
 
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
