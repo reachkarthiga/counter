@@ -2,6 +2,7 @@ package com.example.counter.savedCounters
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +10,14 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.counter.R
 import com.example.counter.counterTag.CounterPage
 import com.example.counter.counterTag.CounterViewModel
-import com.example.counter.dataBase.Database
 import com.example.counter.databinding.FragmentSavedCountersBinding
-import com.example.counter.databinding.SaveCounterDialogBinding
+import com.example.counter.databinding.HeadingEdittextButtonDialogBinding
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SavedCounters : Fragment() {
 
@@ -34,7 +32,7 @@ class SavedCounters : Fragment() {
         val binding = FragmentSavedCountersBinding.inflate(layoutInflater)
 
         val adapter = CounterAdapter(CounterClickListener {
-            viewModel.setCounterValues(it)
+            viewModel.setCounterValuesOnScreen(it)
             replaceFragment(CounterPage())
         })
 
@@ -65,18 +63,22 @@ class SavedCounters : Fragment() {
     private fun showSaveCountDialog() {
 
         val builder: AlertDialog = AlertDialog.Builder(context).create()
-        val view = SaveCounterDialogBinding.inflate(layoutInflater)
+        val view = HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
+
+        view.heading.text = "Add Counter"
+        view.edittext.hint = "Counter Name"
+        view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
         builder.setView(view.root)
         builder.setCancelable(true)
         builder.show()
 
-        view.saveButton.setOnClickListener {
-            if (view.counterName.text.toString().trim().isNotEmpty()) {
-                viewModel.saveCounter(view.counterName.text.toString())
+        view.button.setOnClickListener {
+            if (view.edittext.text.toString().trim().isNotEmpty()) {
+                viewModel.saveCounter(view.edittext.text.toString())
                 builder.dismiss()
                 replaceFragment(CounterPage())
-                viewModel.updateNewCounterName(view.counterName.text.toString().trim())
+                viewModel.setNewCounterOnScreen(view.edittext.text.toString().trim())
             } else {
                 Toast.makeText(context, "Counter Name is Mandatory", Toast.LENGTH_SHORT).show()
             }

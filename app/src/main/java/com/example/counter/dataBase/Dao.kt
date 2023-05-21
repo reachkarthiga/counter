@@ -36,6 +36,12 @@ interface  CounterDao {
     @Query("SELECT count FROM counters where name = :counterName")
     fun getCountValue(counterName:String) :Int
 
+    @Query("UPDATE counters set count = :count where name = :counterName")
+    fun setCountValue(count:Int , counterName:String)
+
+    @Query("DELETE from counters where name <> \"Untitled\"")
+    fun deleteAllCounters()
+
 }
 
 @Dao
@@ -56,7 +62,7 @@ interface  TagDao {
     @Query("SELECT count(*) from tags where counterName = :counterName")
     suspend fun getTagsCount(counterName :String) :Int
 
-    @Query("SELECT case when (select count(*) from tags where count = :count and counterName = :counterName) > 1  then (cast (1 as bit) ) else (cast (0 as bit)) end  ")
+    @Query("SELECT case when (select count(*) from tags where count = :count and counterName = :counterName) > 0  then (cast (1 as bit) ) else (cast (0 as bit)) end  ")
     fun checkAvailability(count:Int , counterName: String) :Boolean
 
     @Query("SELECT * FROM tags where counterName = :counterName")
@@ -64,5 +70,8 @@ interface  TagDao {
 
     @Query("DELETE FROM tags where counterName = :counterName")
     fun clearTempTags(counterName :String)
+
+    @Query("DELETE from tags")
+    fun deleteAllTags()
 
 }

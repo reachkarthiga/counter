@@ -164,16 +164,36 @@ class CounterViewModel(val database: Database) : ViewModel() {
         return isAlreadyTagged
     }
 
-    fun updateNewCounterName(counterName: String) {
+    fun setNewCounterOnScreen(counterName: String) {
         _counterName.value = counterName
         count.value = 0
     }
 
-    fun setCounterValues(counterName: String) {
+    fun setCounterValuesOnScreen(counterName: String) {
         viewModelScope.launch {
             _counterName.value = counterName
             count.value = database.counterDao.getCountValue(counterName)
         }
     }
 
+    fun clearCounterCount() {
+
+        viewModelScope.launch {
+            database.counterDao.setCountValue(0, counterName.value.toString())
+            count.value = 0
+        }
+
+    }
+
+    fun setCounterCount(countValue:Int) {
+
+        viewModelScope.launch {
+            database.counterDao.setCountValue(countValue, counterName.value.toString())
+            count.value = countValue
+        }
+
+    }
+
 }
+
+
