@@ -24,6 +24,10 @@ class CounterAdapter(val clickListener: CounterClickListener) :ListAdapter<Count
         }
     }
 
+    fun getCounter(bindingAdapterPosition: Int) :Counter {
+        return getItem(bindingAdapterPosition)
+    }
+
 }
 
 class diffUtilCallBack() :DiffUtil.ItemCallback<Counter>() {

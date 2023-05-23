@@ -73,7 +73,10 @@ class CounterViewModel(application: Application) : ViewModel() {
     }
 
     fun increaseCountValue() {
-        count.value = count.value?.plus(steps)
+
+        if ((count.value?.toInt() ?: 0) < 9999) {
+            count.value = count.value?.plus(steps)
+        }
 
         viewModelScope.launch {
             database.counterDao.updateCount(
@@ -214,6 +217,31 @@ class CounterViewModel(application: Application) : ViewModel() {
 
         }
 
+    }
+
+    fun deleteCounter(counter: Counter) {
+        viewModelScope.launch {
+            database.counterDao.deleteCounter(counter)
+        }
+    }
+
+    fun updateCounter(counter: Counter) {
+        viewModelScope.launch {
+            database.counterDao.updateCounter(counter)
+        }
+    }
+
+    fun deleteTag(tag: Tags) {
+        viewModelScope.launch {
+            database.tagDao.deleteTag(tag)
+        }
+
+    }
+
+    fun updateTag(tag: Tags) {
+        viewModelScope.launch {
+            database.tagDao.updateTag(tag)
+        }
     }
 
 }

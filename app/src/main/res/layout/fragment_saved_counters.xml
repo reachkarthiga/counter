@@ -30,7 +30,6 @@
             android:id="@+id/recycler_view_counters"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="@dimen/margin_border"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             tools:listitem="@layout/counter_list_item_view" />
 

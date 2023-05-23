@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.counter.models.Tags
 import com.example.counter.databinding.TagListItemViewBinding
+import com.example.counter.models.Counter
 
 
 class TagAdapter() :
@@ -23,6 +24,11 @@ class TagAdapter() :
             holder.binding.item = getItem(position)
             holder.binding.executePendingBindings()
         }
+    }
+
+
+    fun getCounter(bindingAdapterPosition: Int) : Tags {
+        return getItem(bindingAdapterPosition)
     }
 
 }
