@@ -22,9 +22,9 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:backgroundTint="@color/color_light"
-            app:itemIconTint="@color/black"
-            app:itemTextColor="@color/black"
+            app:backgroundTint="@color/color_primary"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
             app:menu="@menu/bottom_menu"
             android:id = "@+id/bottom_nav_view" />
 

@@ -67,6 +67,7 @@ class SavedCounters : Fragment() {
 
         view.heading.text = "Add Counter"
         view.edittext.hint = "Counter Name"
+        view.button.text = "Done"
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
         builder.setView(view.root)

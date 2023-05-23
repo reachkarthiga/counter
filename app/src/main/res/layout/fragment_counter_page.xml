@@ -13,7 +13,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id = "@+id/counter_page">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -51,7 +52,6 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:gravity="center"
-            android:onClick="@{() -> viewModel.increaseCountValue()}"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="+"
@@ -67,7 +67,6 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:gravity="center"
-            android:onClick="@{() -> viewModel.decreaseCountValue()}"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="-"

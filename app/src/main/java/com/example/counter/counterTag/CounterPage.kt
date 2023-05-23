@@ -2,7 +2,9 @@ package com.example.counter.counterTag
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.hardware.input.InputManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
@@ -12,6 +14,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.counter.R
 import com.example.counter.databinding.FragmentCounterPageBinding
 import com.example.counter.databinding.HeadingEdittextButtonDialogBinding
 import org.koin.android.ext.android.inject
@@ -20,11 +23,14 @@ import org.koin.android.ext.android.inject
 class CounterPage : Fragment() {
 
     val viewModel: CounterViewModel by inject()
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        mediaPlayer = MediaPlayer.create(this@CounterPage.requireContext(), R.raw.sound)
 
         val binding = FragmentCounterPageBinding.inflate(layoutInflater)
 
@@ -39,13 +45,35 @@ class CounterPage : Fragment() {
         }
 
         binding.resetButton.setOnClickListener {
-            viewModel.clearCounterCount()
+            showConfirmationDialog()
         }
 
         binding.gotoButton.setOnClickListener {
             showGoToDialog()
         }
 
+        if (viewModel.tapToIncrease) {
+            binding.counterPage.setOnClickListener {
+                viewModel.increaseCountValue()
+                if (viewModel.playSound) {
+                    mediaPlayer.start()
+                }
+            }
+        }
+
+        binding.increment.setOnClickListener {
+            viewModel.increaseCountValue()
+            if (viewModel.playSound) {
+                mediaPlayer.start()
+            }
+        }
+
+        binding.decrement.setOnClickListener {
+            viewModel.decreaseCountValue()
+            if (viewModel.playSound) {
+                mediaPlayer.start()
+            }
+        }
 
         val adapter = TagAdapter()
 
@@ -74,13 +102,38 @@ class CounterPage : Fragment() {
 
                 binding.tagName.text?.clear()
 
-                val inputManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val inputManager =
+                    context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputManager.hideSoftInputFromWindow(view?.windowToken, 0)
 
             }
         }
 
         return binding.root
+
+    }
+
+    private fun showConfirmationDialog() {
+
+        val builder = AlertDialog.Builder(context)
+
+        builder.setTitle("Are You sure ?")
+        builder.setMessage("This will delete the tags and counter. Are you sure you want to continue ?" + "\n\nClick Tags Alone option to delete only tags." )
+
+        builder.setPositiveButton("Yes" , DialogInterface.OnClickListener { dialog, which ->
+            viewModel.setCounterCount(0)
+            viewModel.clearTags()
+        })
+
+        builder.setNegativeButton( "No", DialogInterface.OnClickListener { dialog, which ->
+            dialog.dismiss()
+        })
+
+        builder.setNeutralButton("Tags alone" , DialogInterface.OnClickListener { dialog, which ->
+            viewModel.clearTags()
+        })
+
+        builder.create().show()
 
     }
 
@@ -92,6 +145,7 @@ class CounterPage : Fragment() {
 
         view.heading.text = "Go To"
         view.edittext.hint = "Counter Value"
+        view.button.text = "Done"
         view.edittext.inputType = InputType.TYPE_CLASS_NUMBER
 
         builder.setView(view.root)
@@ -99,7 +153,7 @@ class CounterPage : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
-            if (view.edittext.text.toString().toInt() > 0) {
+            if (view.edittext.text.toString().isNotEmpty()) {
                 viewModel.setCounterCount(view.edittext.text.toString().toInt())
                 builder.dismiss()
             } else {
@@ -109,6 +163,7 @@ class CounterPage : Fragment() {
 
     }
 
+
     private fun showSaveCounterDialog() {
 
         val builder: AlertDialog = AlertDialog.Builder(context).create()
@@ -116,6 +171,7 @@ class CounterPage : Fragment() {
 
         view.heading.text = "Add Counter"
         view.edittext.hint = "Counter Name"
+        view.button.text = "Save"
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
         builder.setView(view.root)
@@ -132,5 +188,12 @@ class CounterPage : Fragment() {
         }
 
     }
+
+    override fun onDestroyView() {
+        mediaPlayer.release()
+        super.onDestroyView()
+
+    }
+
 
 }

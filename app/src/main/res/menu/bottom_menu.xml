@@ -3,14 +3,17 @@
 
     <item android:id="@+id/singleCounter"
         android:title = "Counter"
+        android:titleTextColor = "@color/white"
         android:icon = "@drawable/ic_baseline_123_24"/>
 
     <item android:id="@+id/counterList"
         android:title = "Counters List"
+        android:titleTextColor = "@color/white"
         android:icon = "@drawable/ic_baseline_format_list_bulleted_24"/>
 
     <item android:id="@+id/settings"
         android:title = "Settings"
+        android:titleTextColor = "@color/white"
         android:icon = "@drawable/ic_baseline_settings_24"/>
 
 

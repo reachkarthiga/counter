@@ -1,20 +1,29 @@
 package com.example.counter.counterTag
 
-import android.util.Log
+import android.app.Application
+import android.content.Context
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import androidx.lifecycle.*
 import com.example.counter.dataBase.Database
 import com.example.counter.models.Counter
 import com.example.counter.models.Tags
+import com.example.counter.settings.*
 import kotlinx.coroutines.launch
 
 const val TEMPORARY_COUNTER = "Untitled"
 
-class CounterViewModel(val database: Database) : ViewModel() {
+class CounterViewModel(application: Application) : ViewModel() {
 
     var count = MutableLiveData<Int>()
-    private val steps = 1
+
+    private val database = Database.getInstance(application.applicationContext)
+
+    private val sharedPreferences = application.getSharedPreferences(SETTINGS , Context.MODE_PRIVATE)
+
+     var steps: Int = sharedPreferences.getInt(STEP_VALUE, 1)
+     var tapToIncrease :Boolean = sharedPreferences.getBoolean(TAP, false)
+     var playSound :Boolean = sharedPreferences.getBoolean(SOUND, false)
 
     val tagList: LiveData<List<Tags>>
         get() = Transformations.switchMap(counterName) {
@@ -73,11 +82,18 @@ class CounterViewModel(val database: Database) : ViewModel() {
             )
         }
 
+
     }
 
     fun decreaseCountValue() {
+
         if ((count.value ?: 0) > steps) {
             count.value = count.value?.minus(steps)
+
+            if ((count.value ?: 0) < 0) {
+                count.value = 0
+            }
+
         } else {
             count.value = 0
         }
@@ -90,6 +106,7 @@ class CounterViewModel(val database: Database) : ViewModel() {
         }
 
     }
+
 
     fun saveTag(tagName: String, count: Int, counter: String) {
 
@@ -142,8 +159,9 @@ class CounterViewModel(val database: Database) : ViewModel() {
     override fun onCleared() {
 
         viewModelScope.launch {
-            database.tagDao.clearTempTags(TEMPORARY_COUNTER)
-            database.counterDao.clearTempCounter(TEMPORARY_COUNTER)
+            database.tagDao.clearTags(TEMPORARY_COUNTER)
+            val counter = database.counterDao.getCounterByName(TEMPORARY_COUNTER)
+            database.counterDao.deleteCounter(counter)
         }
 
         super.onCleared()
@@ -176,20 +194,24 @@ class CounterViewModel(val database: Database) : ViewModel() {
         }
     }
 
-    fun clearCounterCount() {
-
-        viewModelScope.launch {
-            database.counterDao.setCountValue(0, counterName.value.toString())
-            count.value = 0
-        }
-
-    }
 
     fun setCounterCount(countValue:Int) {
 
         viewModelScope.launch {
             database.counterDao.setCountValue(countValue, counterName.value.toString())
             count.value = countValue
+        }
+
+    }
+
+    fun clearTags() {
+
+        viewModelScope.launch {
+            database.tagDao.clearTags(counterName.value.toString())
+
+            val counter = database.counterDao.getCounterByName(counterName.value.toString())
+            database.counterDao.updateCounter(Counter(counter.name, counter.count, 0, counter.id))
+
         }
 
     }

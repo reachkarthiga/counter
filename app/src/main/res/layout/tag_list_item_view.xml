@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_border"
             android:gravity = "end"
+            android:paddingEnd="48dp"
             android:layout_marginBottom="@dimen/margin_border"
             tools:text="42" />
 

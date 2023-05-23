@@ -1,40 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.appcompat.widget.Toolbar
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.counter.settings.SettingsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:id = "@+id/toolbar"
-        android:background = "@color/color_primary"
-        app:layout_constraintTop_toTopOf="parent"
-        app:titleTextColor="@color/white"
-        app:title="Settings"/>
+        android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        android:text = "Reset"
-        android:textColor = "@color/black"
-        android:layout_margin="16dp"
-        style="@style/TextAppearance.MaterialComponents.Body1"
-        android:id = "@+id/reset"/>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/color_primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="Settings"
+            app:titleTextColor="@color/white" />
+
+        <TextView
+            android:id="@+id/division_1"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Counter"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+        <ImageView
+            android:id="@+id/reset_counters_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_delete_sweep_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/division_1" />
+
+        <TextView
+            android:id="@+id/reset_counters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Clear All Counters"
+            app:layout_constraintStart_toEndOf="@id/reset_counters_image"
+            app:layout_constraintTop_toBottomOf="@+id/division_1" />
+
+        <View
+            android:id="@+id/line_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="16dp"
+            android:background="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/reset_counters" />
+
+        <ImageView
+            android:id="@+id/step_value_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_height_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/step_plus"
+            app:layout_constraintTop_toTopOf="@+id/step_plus"/>
+
+        <TextView
+            android:id="@+id/step_value_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Step Value"
+            app:layout_constraintBottom_toBottomOf="@+id/step_plus"
+            app:layout_constraintStart_toEndOf="@id/step_value_image"
+            app:layout_constraintTop_toTopOf="@+id/step_plus" />
+
+        <TextView
+            android:id="@+id/step_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="16dp"
+            android:text=" + "
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@id/step_value"
+            app:layout_constraintTop_toBottomOf="@+id/line_1" />
+
+        <TextView
+            android:id="@+id/step_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@{String.valueOf(viewModel.step_value)}"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/step_plus"
+            app:layout_constraintEnd_toStartOf="@+id/step_minus"
+            app:layout_constraintTop_toTopOf="@+id/step_plus" />
+
+        <TextView
+            android:id="@+id/step_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:padding="16dp"
+            android:text=" - "
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line_1" />
+
+        <View
+            android:id="@+id/line_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="16dp"
+            android:background="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/step_value" />
+
+        <TextView
+            android:id="@+id/division_2"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Controls"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/line_2" />
+
+        <ImageView
+            android:id="@+id/control_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_volume_up_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/division_2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Play sound on Counter Value change"
+            app:layout_constraintBottom_toBottomOf="@+id/control_1"
+            app:layout_constraintStart_toEndOf="@+id/control_1"
+            app:layout_constraintTop_toTopOf="@+id/control_1" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:checked="@{viewModel.playSound_setting}"
+            app:layout_constraintBottom_toBottomOf="@+id/control_1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/control_1" />
+
+        <View
+            android:id="@+id/line_3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="16dp"
+            android:background="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/control_1" />
 
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/reset"
-        android:text = "Delete All Tags"
-        android:textColor = "@color/black"
-        android:layout_margin="16dp"
-        style="@style/TextAppearance.MaterialComponents.Body1"
-        android:id = "@+id/delete_tags"/>
+        <ImageView
+            android:id="@+id/control_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_exposure_plus_1_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/line_3" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Increase Counter Value on Tap"
+            app:layout_constraintBottom_toBottomOf="@+id/control_2"
+            app:layout_constraintStart_toEndOf="@+id/control_2"
+            app:layout_constraintTop_toTopOf="@+id/control_2" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_tap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:checked="@{viewModel.tap_setting}"
+            app:layout_constraintBottom_toBottomOf="@+id/control_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/control_2" />
+
+        <View
+            android:id="@+id/line_4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="16dp"
+            android:background="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/control_2" />
 
 
+        <TextView
+            android:id="@+id/division_3"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="App Info"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@id/line_4" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
