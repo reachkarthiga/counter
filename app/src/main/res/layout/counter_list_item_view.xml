@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="20dp"
         android:onClick="@{() -> clickListener.onClick(viewModel)}">
 
     <TextView
@@ -28,8 +28,8 @@
         tools:text = "Sample counter"
         android:text = "@{viewModel.name}"
         style="@style/text_list"
-        android:layout_marginTop = "@dimen/margin_border"
-        android:layout_marginBottom = "@dimen/margin_border"/>
+
+        />
 
     <TextView
         android:layout_width="0dp"
@@ -40,8 +40,8 @@
         tools:text = "42"
         style="@style/text_list"
         android:text="@{String.valueOf(viewModel.count)}"
-        android:layout_marginTop = "@dimen/margin_border"
-        android:layout_marginBottom = "@dimen/margin_border"/>
+
+       />
 
     </LinearLayout>
 

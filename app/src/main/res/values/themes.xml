@@ -3,7 +3,7 @@
     <style name="Theme.Counter" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorPrimaryVariant">#192E4C</item>
+        <item name="colorPrimaryVariant">#1D314C</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/color_secondary</item>

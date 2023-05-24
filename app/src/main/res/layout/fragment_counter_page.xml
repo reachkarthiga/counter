@@ -19,7 +19,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_height="64dp"
             android:background="@color/color_primary"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Counters"
@@ -48,21 +48,6 @@
             tools:text="2" />
 
         <TextView
-            android:id="@+id/increment"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:gravity="center"
-            android:paddingStart="32dp"
-            android:paddingEnd="32dp"
-            android:text="+"
-            android:textSize="80sp"
-            app:layout_constraintDimensionRatio=""
-            app:layout_constraintEnd_toStartOf="@+id/decrement"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/count_value" />
-
-        <TextView
             android:id="@+id/decrement"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -71,9 +56,24 @@
             android:paddingEnd="32dp"
             android:text="-"
             android:textSize="80sp"
+            app:layout_constraintDimensionRatio=""
+            app:layout_constraintEnd_toStartOf="@+id/increment"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/count_value" />
+
+        <TextView
+            android:id="@+id/increment"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="+"
+            android:textSize="80sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/increment"
+            app:layout_constraintStart_toEndOf="@+id/decrement"
             app:layout_constraintTop_toBottomOf="@+id/count_value" />
 
         <androidx.appcompat.widget.AppCompatEditText

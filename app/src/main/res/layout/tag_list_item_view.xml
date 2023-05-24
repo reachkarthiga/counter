@@ -26,8 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity = "start"
-            android:layout_marginTop="@dimen/margin_border"
-            android:layout_marginBottom="@dimen/margin_border"
             tools:text="Sample Tag" />
 
         <TextView
@@ -36,10 +34,8 @@
             android:text="@{String.valueOf(item.count)}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_border"
             android:gravity = "end"
             android:paddingEnd="48dp"
-            android:layout_marginBottom="@dimen/margin_border"
             tools:text="42" />
 
     </RelativeLayout>

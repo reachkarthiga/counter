@@ -179,7 +179,7 @@ class CounterPage : Fragment() {
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
         builder.setView(view.root)
-        builder.setCancelable(true)
+        builder.setCancelable(false)
         builder.show()
 
         view.button.setOnClickListener {
