@@ -4,5 +4,5 @@
 
     <solid android:color = "@color/color_button"/>
     <corners android:radius =
-        "10dp"/>
+        "50dp"/>
 </shape>

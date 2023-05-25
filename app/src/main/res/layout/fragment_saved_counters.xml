@@ -19,9 +19,10 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
             android:background="@color/color_primary"
             app:titleTextColor="@color/white"
+            android:layout_height="72dp"
+            style="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Saved Counters" />
 
@@ -34,7 +35,7 @@
             tools:listitem="@layout/counter_list_item_view" />
 
         <TextView
-            style="@style/text_highlight"
+            style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_data_counters"

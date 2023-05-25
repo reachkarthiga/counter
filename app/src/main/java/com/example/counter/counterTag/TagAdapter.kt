@@ -27,9 +27,10 @@ class TagAdapter() :
     }
 
 
-    fun getCounter(bindingAdapterPosition: Int) : Tags {
+    fun getTag(bindingAdapterPosition: Int) : Tags {
         return getItem(bindingAdapterPosition)
     }
+
 
 }
 

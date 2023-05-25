@@ -19,27 +19,25 @@ class CounterViewModel(application: Application) : ViewModel() {
 
     private val database = Database.getInstance(application.applicationContext)
 
-    private val sharedPreferences = application.getSharedPreferences(SETTINGS , Context.MODE_PRIVATE)
+    private val sharedPreferences = application.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE)
 
-     var steps: Int = sharedPreferences.getInt(STEP_VALUE, 1)
-     var tapToIncrease :Boolean = sharedPreferences.getBoolean(TAP, false)
-     var playSound :Boolean = sharedPreferences.getBoolean(SOUND, false)
+    var steps: Int = sharedPreferences.getInt(STEP_VALUE, 1)
+    var tapToIncrease: Boolean = sharedPreferences.getBoolean(TAP, false)
+    var playSound: Boolean = sharedPreferences.getBoolean(SOUND, false)
 
     val tagList: LiveData<List<Tags>>
-        get() = Transformations.switchMap(counterName) {
+        get() = Transformations.switchMap(counterNameSelected) {
             database.tagDao.getTagsByName(it)
         }
 
     val counterList: LiveData<List<Counter>>
         get() = database.counterDao.getCounters()
 
-    private val _counterName = MutableLiveData<String>()
-    val counterName: LiveData<String>
-        get() = _counterName
+    val counterNameSelected = MutableLiveData<String>()
 
     val showCounterName: LiveData<Int>
-        get() = _counterName.map {
-            if (_counterName.value == TEMPORARY_COUNTER) {
+        get() = counterNameSelected.map {
+            if (counterNameSelected.value == TEMPORARY_COUNTER) {
                 INVISIBLE
             } else {
                 VISIBLE
@@ -48,27 +46,8 @@ class CounterViewModel(application: Application) : ViewModel() {
 
     init {
 
-        _counterName.value = TEMPORARY_COUNTER
-
-        viewModelScope.launch {
-
-            val counter :Counter = database.counterDao.getCounterByName(TEMPORARY_COUNTER)
-
-            if (counter == null) {
-                database.counterDao.insertCounter(
-                    Counter(
-                        TEMPORARY_COUNTER,
-                        0,
-                        0
-                    )
-                )
-
-                count.value = 0
-
-            } else {
-                count.value = counter.count
-            }
-        }
+        counterNameSelected.value = TEMPORARY_COUNTER
+        count.value = 0
 
     }
 
@@ -78,53 +57,50 @@ class CounterViewModel(application: Application) : ViewModel() {
             count.value = count.value?.plus(steps)
         }
 
-        viewModelScope.launch {
-            database.counterDao.updateCount(
-                count.value.toString().toInt(),
-                counterName.value.toString()
-            )
+        if (counterNameSelected.value != TEMPORARY_COUNTER) {
+            viewModelScope.launch {
+                database.counterDao.updateCount(
+                    count.value.toString().toInt(),
+                    counterNameSelected.value.toString()
+                )
+            }
         }
-
 
     }
 
     fun decreaseCountValue() {
 
-        if ((count.value ?: 0) > steps) {
+        if ((count.value ?: 0) >= steps) {
             count.value = count.value?.minus(steps)
-
-            if ((count.value ?: 0) < 0) {
-                count.value = 0
-            }
-
         } else {
             count.value = 0
         }
 
-        viewModelScope.launch {
-            database.counterDao.updateCount(
-                count.value.toString().toInt(),
-                counterName.value.toString()
-            )
+        if (counterNameSelected.value != TEMPORARY_COUNTER) {
+            viewModelScope.launch {
+                database.counterDao.updateCount(
+                    count.value.toString().toInt(),
+                    counterNameSelected.value.toString()
+                )
+            }
         }
 
     }
 
 
-    fun saveTag(tagName: String, count: Int, counter: String) {
+    fun saveTag(tagName: String, count: Int, counterName: String) {
 
-        if (tagName.isNotEmpty()) {
-
-            val counterName = counter.ifEmpty { TEMPORARY_COUNTER }
-
+        if (tagName.isNotEmpty() && counterName != TEMPORARY_COUNTER) {
             viewModelScope.launch {
                 database.tagDao.insertTag(Tags(tagName, count, counterName))
             }
+        }
 
-            viewModelScope.launch {
-                database.counterDao.increaseTagCount(counterName)
-            }
+    }
 
+    fun increaseTagCount(counterName: String) {
+        viewModelScope.launch {
+            database.counterDao.increaseTagCount(counterName)
         }
 
     }
@@ -134,7 +110,7 @@ class CounterViewModel(application: Application) : ViewModel() {
         if (counterName.isNotEmpty()) {
 
             viewModelScope.launch {
-                val tagsCount = database.tagDao.getTagsCount(_counterName.value.toString())
+                val tagsCount = database.tagDao.getTagsCount(counterName)
                 database.counterDao.insertCounter(
                     Counter(
                         counterName,
@@ -142,66 +118,31 @@ class CounterViewModel(application: Application) : ViewModel() {
                         tagsCount
                     )
                 )
-
-                val counter = database.counterDao.getCounterByName(TEMPORARY_COUNTER)
-
-                database.counterDao.deleteCounter(counter)
-
             }
 
-            viewModelScope.launch {
-                database.tagDao.updateTags(_counterName.value.toString(), counterName)
-            }
-
-            _counterName.value = counterName
+            counterNameSelected.value = counterName
 
         }
 
-    }
-
-    override fun onCleared() {
-
-        viewModelScope.launch {
-            database.tagDao.clearTags(TEMPORARY_COUNTER)
-            val counter = database.counterDao.getCounterByName(TEMPORARY_COUNTER)
-            database.counterDao.deleteCounter(counter)
-        }
-
-        super.onCleared()
-
-    }
-
-    fun checkTagAvailability(): Boolean {
-
-        var isAlreadyTagged = false
-
-        viewModelScope.launch {
-            isAlreadyTagged = database.tagDao.checkAvailability(
-                count.value.toString().toInt(),
-                counterName.value.toString()
-            )
-        }
-
-        return isAlreadyTagged
     }
 
     fun setNewCounterOnScreen(counterName: String) {
-        _counterName.value = counterName
+        counterNameSelected.value = counterName
         count.value = 0
     }
 
     fun setCounterValuesOnScreen(counterName: String) {
         viewModelScope.launch {
-            _counterName.value = counterName
+            counterNameSelected.value = counterName
             count.value = database.counterDao.getCountValue(counterName)
         }
     }
 
 
-    fun setCounterCount(countValue:Int) {
+    fun setCounterCount(countValue: Int) {
 
         viewModelScope.launch {
-            database.counterDao.setCountValue(countValue, counterName.value.toString())
+            database.counterDao.setCountValue(countValue, counterNameSelected.value.toString())
             count.value = countValue
         }
 
@@ -210,32 +151,52 @@ class CounterViewModel(application: Application) : ViewModel() {
     fun clearTags() {
 
         viewModelScope.launch {
-            database.tagDao.clearTags(counterName.value.toString())
-
-            val counter = database.counterDao.getCounterByName(counterName.value.toString())
+            database.tagDao.clearTags(counterNameSelected.value.toString())
+            val counter = database.counterDao.getCounterByName(counterNameSelected.value.toString())
             database.counterDao.updateCounter(Counter(counter.name, counter.count, 0, counter.id))
-
         }
 
     }
 
     fun deleteCounter(counter: Counter) {
+
         viewModelScope.launch {
             database.counterDao.deleteCounter(counter)
         }
+
+        viewModelScope.launch {
+            database.tagDao.deleteTagByCounter(counter.name)
+        }
+
+        if (counter.name == counterNameSelected.value.toString()) {
+            counterNameSelected.value = ""
+            count.value = 0
+        }
+
     }
 
-    fun updateCounter(counter: Counter) {
+    fun updateCounter(oldCounter: Counter, newCounter: Counter) {
+
         viewModelScope.launch {
-            database.counterDao.updateCounter(counter)
+            database.counterDao.updateCounter(newCounter)
         }
+
+        viewModelScope.launch {
+            database.tagDao.getTagsByName(oldCounter.name).value?.forEach {
+                database.tagDao.updateTag(Tags(it.tagName, it.count, newCounter.name, it.id))
+            }
+        }
+
+        if (oldCounter.name == counterNameSelected.value) {
+            counterNameSelected.value = newCounter.name
+        }
+
     }
 
     fun deleteTag(tag: Tags) {
         viewModelScope.launch {
             database.tagDao.deleteTag(tag)
         }
-
     }
 
     fun updateTag(tag: Tags) {

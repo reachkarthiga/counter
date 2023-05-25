@@ -15,7 +15,7 @@ const val STEP_VALUE = "stepValue"
 const val SOUND = "sound"
 
 
-class SettingsViewModel(val application: Application) :ViewModel() {
+class SettingsViewModel(application: Application) :ViewModel() {
 
     var step_value = MutableLiveData<Int>()
 
@@ -23,7 +23,6 @@ class SettingsViewModel(val application: Application) :ViewModel() {
 
     var tap_setting = MutableLiveData<Boolean>()
     var playSound_setting = MutableLiveData<Boolean>()
-    var useButtons_setting = MutableLiveData<Boolean>()
 
     private val database = Database.getInstance(application.baseContext)
 
@@ -38,7 +37,6 @@ class SettingsViewModel(val application: Application) :ViewModel() {
         step_value.value = sharedPreferences.getInt(STEP_VALUE, 1)
         tap_setting.value = sharedPreferences.getBoolean(TAP, false)
         playSound_setting.value = sharedPreferences.getBoolean(SOUND, false)
-
     }
 
     fun increaseStepValue() {

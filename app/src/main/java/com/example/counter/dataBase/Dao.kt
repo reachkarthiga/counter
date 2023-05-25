@@ -24,7 +24,7 @@ interface  CounterDao {
     @Query("UPDATE counters set tagsCount = (tagsCount+1) where name = :counterName")
     fun increaseTagCount(counterName: String)
 
-    @Query("SELECT * FROM counters where name <> \"Untitled\"")
+    @Query("SELECT * FROM counters")
     fun getCounters() :LiveData<List<Counter>>
 
     @Query("SELECT * FROM counters where name = :counterName")
@@ -36,7 +36,7 @@ interface  CounterDao {
     @Query("UPDATE counters set count = :count where name = :counterName")
     fun setCountValue(count:Int , counterName:String)
 
-    @Query("DELETE from counters where name <> \"Untitled\"")
+    @Query("DELETE from counters")
     fun deleteAllCounters()
 
 }
@@ -59,9 +59,6 @@ interface  TagDao {
     @Query("SELECT count(*) from tags where counterName = :counterName")
     suspend fun getTagsCount(counterName :String) :Int
 
-    @Query("SELECT case when (select count(*) from tags where count = :count and counterName = :counterName) > 0  then (cast (1 as bit) ) else (cast (0 as bit)) end  ")
-    fun checkAvailability(count:Int , counterName: String) :Boolean
-
     @Query("SELECT * FROM tags where counterName = :counterName order by count desc")
     fun getTagsByName(counterName :String) :LiveData<List<Tags>>
 
@@ -70,5 +67,8 @@ interface  TagDao {
 
     @Query("DELETE from tags")
     fun deleteAllTags()
+
+    @Query("DELETE from tags where counterName = :name")
+    fun deleteTagByCounter(name: String)
 
 }

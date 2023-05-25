@@ -4,24 +4,24 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Canvas
-import android.hardware.input.InputManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.text.InputType
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.example.counter.R
 import com.example.counter.databinding.FragmentCounterPageBinding
 import com.example.counter.databinding.HeadingEdittextButtonDialogBinding
-import com.example.counter.models.Counter
 import com.example.counter.models.Tags
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import org.koin.android.ext.android.inject
@@ -29,8 +29,10 @@ import org.koin.android.ext.android.inject
 
 class CounterPage : Fragment() {
 
-    val viewModel: CounterViewModel by inject()
+    private val viewModel: CounterViewModel by inject()
     private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var adapter: TagAdapter
+    private lateinit var list: MutableList<Tags>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +41,9 @@ class CounterPage : Fragment() {
 
         mediaPlayer = MediaPlayer.create(this@CounterPage.requireContext(), R.raw.sound)
 
+        val inputManager =
+            context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
         val binding = FragmentCounterPageBinding.inflate(layoutInflater)
 
         binding.viewModel = viewModel
@@ -46,13 +51,13 @@ class CounterPage : Fragment() {
 
 
         binding.saveButton.setOnClickListener {
-            if (viewModel.counterName.value == TEMPORARY_COUNTER) {
+            if (viewModel.counterNameSelected.value == TEMPORARY_COUNTER) {
                 showSaveCounterDialog()
             }
         }
 
         binding.resetButton.setOnClickListener {
-            showConfirmationDialog()
+            showConfirmationDialogForReset()
         }
 
         binding.gotoButton.setOnClickListener {
@@ -82,17 +87,24 @@ class CounterPage : Fragment() {
             }
         }
 
-        val adapter = TagAdapter()
+        adapter = TagAdapter()
+        val layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
         binding.tagList.adapter = adapter
-
+        
         viewModel.tagList.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
 
-        val callBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        val callBack = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
                 return false
             }
 
@@ -102,33 +114,77 @@ class CounterPage : Fragment() {
                 when (direction) {
 
                     ItemTouchHelper.LEFT -> {
-                        viewModel.deleteTag(adapter.getCounter(viewHolder.bindingAdapterPosition))
+
+                        val tag = adapter.getTag(viewHolder.bindingAdapterPosition)
+
+                        if (tag.counterName == TEMPORARY_COUNTER) {
+
+                            list = adapter.currentList.toMutableList()
+                            list.remove(tag)
+                            adapter.submitList(list)
+
+                        } else {
+                            viewModel.deleteTag(tag)
+                        }
+
                     }
 
                     ItemTouchHelper.RIGHT -> {
 
-                        val list = adapter.currentList.toMutableList()
+                        list = adapter.currentList.toMutableList()
                         list.removeAt(viewHolder.bindingAdapterPosition)
-                        adapter.submitList(
-                            list
-                        )
+                        adapter.submitList(list)
 
-                        showEditDialog(adapter.getCounter(viewHolder.bindingAdapterPosition))
+                        showEditTagDialog(adapter.getTag(viewHolder.bindingAdapterPosition))
 
                     }
                 }
             }
 
-            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
 
-                RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red))
-                    .addSwipeRightBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green))
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addSwipeLeftBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.red
+                        )
+                    )
+                    .addSwipeRightBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.green
+                        )
+                    )
                     .addSwipeLeftActionIcon(R.drawable.ic_baseline_delete_24)
                     .addSwipeRightActionIcon(R.drawable.ic_baseline_edit_24)
                     .create().decorate()
 
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
 
             }
 
@@ -137,38 +193,75 @@ class CounterPage : Fragment() {
         val itemTouchHelper = ItemTouchHelper(callBack)
         itemTouchHelper.attachToRecyclerView(binding.tagList)
 
+        binding.tagList.layoutManager = layoutManager
 
-        binding.tagList.layoutManager =
-            LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
         binding.addTag.setOnClickListener {
 
             if (binding.tagName.text.toString().trim().isEmpty()) {
-                Toast.makeText(this.context, "Tag Name cant be empty", Toast.LENGTH_SHORT).show()
-            } else if (viewModel.checkTagAvailability()) {
-                Toast.makeText(this.context, "Count value already Tagged", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                viewModel.saveTag(
-                    binding.tagName.text.toString(),
-                    binding.countValue.text.toString().toInt(),
-                    binding.counterName.text.toString()
-                )
-
+                sendMessage("Tag Name cant be empty")
                 binding.tagName.text?.clear()
-
-                val inputManager =
-                    context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputManager.hideSoftInputFromWindow(view?.windowToken, 0)
+                return@setOnClickListener
+            }
+
+            if (adapter.currentList.toMutableList().filter { it.count == viewModel.count.value }
+                    .isNotEmpty()) {
+                sendMessage("Count value already Tagged")
+                binding.tagName.text?.clear()
+                inputManager.hideSoftInputFromWindow(view?.windowToken, 0)
+                return@setOnClickListener
+            }
+
+            when (viewModel.counterNameSelected.value) {
+
+                TEMPORARY_COUNTER -> {
+
+                    list = adapter.currentList.toMutableList()
+
+                    list.add(
+                        Tags(
+                            binding.tagName.text.toString(),
+                            binding.countValue.text.toString().toInt(),
+                            binding.counterName.text.toString(),
+                            System.currentTimeMillis()
+                        )
+                    )
+
+                    adapter.submitList(list)
+
+                }
+
+                else -> {
+
+                    viewModel.saveTag(
+                        binding.tagName.text.toString(),
+                        binding.countValue.text.toString().toInt(),
+                        binding.counterName.text.toString()
+                    )
+
+                    viewModel.increaseTagCount(binding.counterName.text.toString())
+
+                }
 
             }
+
+            binding.tagName.text?.clear()
+            inputManager.hideSoftInputFromWindow(view?.windowToken, 0)
+
+
         }
+
 
         return binding.root
 
     }
 
-    private fun showEditDialog(tag: Tags) {
+    private fun sendMessage(msg: String) {
+        Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showEditTagDialog(tag: Tags) {
 
         val builder: AlertDialog = AlertDialog.Builder(context).create()
         val view = HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
@@ -183,37 +276,74 @@ class CounterPage : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
-            if (view.edittext.text.toString().trim().isNotEmpty()) {
-                viewModel.updateTag(Tags(view.edittext.text.toString(), tag.count, tag.counterName, tag.id))
-                builder.dismiss()
-            } else {
-                Toast.makeText(context, "Counter Name is Mandatory", Toast.LENGTH_SHORT).show()
+
+            if (view.edittext.text.toString().trim().isEmpty()) {
+                sendMessage("Tag Name is Mandatory")
+                return@setOnClickListener
             }
+
+            if (tag.counterName == TEMPORARY_COUNTER) {
+
+                list = adapter.currentList.toMutableList()
+                list.add(
+                    Tags(
+                        view.edittext.text.toString().trim(),
+                        tag.count,
+                        tag.counterName,
+                        tag.id
+                    )
+                )
+
+            } else {
+                viewModel.updateTag(
+                    Tags(
+                        view.edittext.text.toString(),
+                        tag.count,
+                        tag.counterName,
+                        tag.id
+                    )
+                )
+            }
+
+            builder.dismiss()
+
         }
-
-
-
 
     }
 
-    private fun showConfirmationDialog() {
+    private fun showConfirmationDialogForReset() {
 
         val builder = AlertDialog.Builder(context)
 
         builder.setTitle("Are You sure ?")
-        builder.setMessage("This will delete the tags and counter. Are you sure you want to continue ?" + "\n\nClick Tags Alone option to delete only tags." )
+        builder.setMessage("This will delete the tags and counter. Are you sure you want to continue ?" + "\n\nClick Tags Alone option to delete only tags.")
 
-        builder.setPositiveButton("Yes" , DialogInterface.OnClickListener { dialog, which ->
-            viewModel.setCounterCount(0)
-            viewModel.clearTags()
+        builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
+
+            if (viewModel.counterNameSelected.value != TEMPORARY_COUNTER) {
+                viewModel.setCounterCount(0)
+                viewModel.clearTags()
+            } else {
+                viewModel.count.value = 0
+                list = adapter.currentList.toMutableList()
+                list.clear()
+                adapter.submitList(list)
+            }
+
         })
 
-        builder.setNegativeButton( "No", DialogInterface.OnClickListener { dialog, which ->
+        builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
             dialog.dismiss()
         })
 
-        builder.setNeutralButton("Tags alone" , DialogInterface.OnClickListener { dialog, which ->
-            viewModel.clearTags()
+        builder.setNeutralButton("Tags alone", DialogInterface.OnClickListener { dialog, which ->
+            if (viewModel.counterNameSelected.value != TEMPORARY_COUNTER) {
+                viewModel.clearTags()
+            } else {
+                list = adapter.currentList.toMutableList()
+                list.clear()
+                adapter.submitList(list)
+            }
         })
 
         builder.create().show()
@@ -236,16 +366,18 @@ class CounterPage : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
-            if (view.edittext.text.toString().isNotEmpty()) {
-                viewModel.setCounterCount(view.edittext.text.toString().toInt())
-                builder.dismiss()
-            } else {
-                Toast.makeText(context, "Counter Value is Mandatory", Toast.LENGTH_SHORT).show()
+
+            if (view.edittext.text.toString().isEmpty()) {
+                sendMessage("Counter Value is Mandatory")
+                return@setOnClickListener
             }
+
+            viewModel.setCounterCount(view.edittext.text.toString().toInt())
+            builder.dismiss()
+
         }
 
     }
-
 
     private fun showSaveCounterDialog() {
 
@@ -262,12 +394,23 @@ class CounterPage : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
-            if (view.edittext.text.toString().trim().isNotEmpty()) {
-                viewModel.saveCounter(view.edittext.text.toString())
-                builder.dismiss()
-            } else {
-                Toast.makeText(context, "Counter Name is Mandatory", Toast.LENGTH_SHORT).show()
+
+            if (view.edittext.text.toString().trim().isEmpty()) {
+                sendMessage("Counter Name is Mandatory")
+                return@setOnClickListener
             }
+
+            adapter.currentList.forEach {
+                viewModel.saveTag(it.tagName, it.count, view.edittext.text.toString().trim())
+            }
+
+            list = adapter.currentList.toMutableList()
+            list.clear()
+            adapter.submitList(list)
+
+            viewModel.saveCounter(view.edittext.text.toString())
+            builder.dismiss()
+
         }
 
     }

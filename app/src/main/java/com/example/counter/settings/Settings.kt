@@ -23,12 +23,12 @@ class Settings : Fragment() {
 
         val binding = FragmentSettingsBinding.inflate(layoutInflater)
 
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+
         binding.resetCounters.setOnClickListener {
             showConfirmationDialogToDeleteAll()
         }
-
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
 
         binding.stepPlus.setOnClickListener {
             viewModel.increaseStepValue()
@@ -67,9 +67,11 @@ class Settings : Fragment() {
 
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Are You Sure ?")
-        builder.setMessage("This will clear all the counters. Are you sure to delete all counters ?")
+        builder.setMessage("This will clear all the counters and tags. Are you sure to delete all counters ?")
         builder.setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, which ->
             viewModel.clearAll()
+            counterViewModel.count.value = 0
+            counterViewModel.counterNameSelected.value = ""
             dialog.dismiss()
         })
 

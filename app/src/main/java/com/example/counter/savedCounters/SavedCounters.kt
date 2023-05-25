@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.graphics.Canvas
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -59,7 +58,8 @@ class SavedCounters : Fragment() {
             showSaveCountDialog()
         }
 
-        val callBack = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+        val callBack = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -91,16 +91,50 @@ class SavedCounters : Fragment() {
                 }
             }
 
-            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
 
-                RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red))
-                    .addSwipeRightBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green))
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addSwipeLeftBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.red
+                        )
+                    )
+                    .addSwipeRightBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.green
+                        )
+                    )
                     .addSwipeLeftActionIcon(R.drawable.ic_baseline_delete_24)
                     .addSwipeRightActionIcon(R.drawable.ic_baseline_edit_24)
                     .create().decorate()
 
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
 
             }
 
@@ -111,7 +145,8 @@ class SavedCounters : Fragment() {
 
         binding.recyclerViewCounters.adapter = adapter
 
-        binding.recyclerViewCounters.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerViewCounters.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
         return binding.root
 
@@ -132,15 +167,27 @@ class SavedCounters : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
-            if (view.edittext.text.toString().trim().isNotEmpty()) {
-                viewModel.updateCounter(Counter(view.edittext.text.toString(), counter.count, counter.tagsCount, counter.id))
-                builder.dismiss()
-            } else {
-                Toast.makeText(context, "Counter Name is Mandatory", Toast.LENGTH_SHORT).show()
+            if (view.edittext.text.toString().trim().isEmpty()) {
+                sendMessage("Counter Name is Mandator")
+                return@setOnClickListener
             }
+            viewModel.updateCounter(counter,
+                Counter(
+                    view.edittext.text.toString(),
+                    counter.count,
+                    counter.tagsCount,
+                    counter.id
+                )
+            )
+            builder.dismiss()
+
         }
 
 
+    }
+
+    private fun sendMessage(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun showSaveCountDialog() {
@@ -158,14 +205,16 @@ class SavedCounters : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
-            if (view.edittext.text.toString().trim().isNotEmpty()) {
-                viewModel.saveCounter(view.edittext.text.toString())
-                builder.dismiss()
-                replaceFragment(CounterPage())
-                viewModel.setNewCounterOnScreen(view.edittext.text.toString().trim())
-            } else {
-                Toast.makeText(context, "Counter Name is Mandatory", Toast.LENGTH_SHORT).show()
+            if (view.edittext.text.toString().trim().isEmpty()) {
+                sendMessage("Counter Name is Mandatory")
+                return@setOnClickListener
             }
+
+            viewModel.saveCounter(view.edittext.text.toString())
+            builder.dismiss()
+            replaceFragment(CounterPage())
+            viewModel.setNewCounterOnScreen(view.edittext.text.toString().trim())
+
         }
 
     }
@@ -173,7 +222,7 @@ class SavedCounters : Fragment() {
     private fun replaceFragment(fragment: Fragment) {
 
         val fragmentTransaction = parentFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragment , fragment)
+        fragmentTransaction.replace(R.id.fragment, fragment)
         fragmentTransaction.commit()
 
     }
