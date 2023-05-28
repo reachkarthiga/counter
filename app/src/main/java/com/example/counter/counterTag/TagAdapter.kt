@@ -13,6 +13,8 @@ import com.example.counter.models.Counter
 class TagAdapter() :
     androidx.recyclerview.widget.ListAdapter<Tags, RecyclerView.ViewHolder>(diffUtilCallback()) {
 
+    private  lateinit var mRecyclerView :RecyclerView
+
     class TagView( val binding: TagListItemViewBinding):RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -26,11 +28,21 @@ class TagAdapter() :
         }
     }
 
-
     fun getTag(bindingAdapterPosition: Int) : Tags {
         return getItem(bindingAdapterPosition)
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        mRecyclerView = recyclerView
+        super.onAttachedToRecyclerView(recyclerView)
+    }
+    override fun submitList(list: MutableList<Tags>?) {
+        super.submitList(list?.let { ArrayList(it).sortedByDescending {
+            it.count
+        }})
+
+        mRecyclerView.layoutManager?.smoothScrollToPosition(mRecyclerView, RecyclerView.State(), 0)
+    }
 
 }
 

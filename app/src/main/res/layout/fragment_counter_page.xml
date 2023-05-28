@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".counterTag.CounterPage">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.counter.counterTag.CounterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/counter_page"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id = "@+id/counter_page">
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            style="@style/TextAppearance.AppCompat.Medium"
             android:background="@color/color_primary"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Counters"
@@ -44,8 +44,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@{String.valueOf(viewModel.count)}"
+            android:textColor="@color/black"
             android:textSize="100sp"
-            android:textColor = "@color/black"
             app:layout_constraintTop_toBottomOf="@+id/counter_name"
             tools:text="2" />
 
@@ -57,8 +57,8 @@
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="-"
+            android:textColor="@color/black"
             android:textSize="80sp"
-            android:textColor = "@color/black"
             app:layout_constraintDimensionRatio=""
             app:layout_constraintEnd_toStartOf="@+id/increment"
             app:layout_constraintHorizontal_bias="0.5"
@@ -73,31 +73,47 @@
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="+"
+            android:textColor="@color/black"
             android:textSize="80sp"
-            android:textColor = "@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/decrement"
             app:layout_constraintTop_toBottomOf="@+id/count_value" />
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/tag_name"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tag_name_text_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_border"
-            android:background="@drawable/edittext_background"
-            android:hint="Tag Name"
-            android:padding="12dp"
-            android:inputType = "textCapWords"
+            app:boxStrokeWidth="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/add_tag"
             app:layout_constraintEnd_toStartOf="@+id/add_tag"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/add_tag" />
+            app:layout_constraintTop_toTopOf="@+id/add_tag">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tag_name"
+                android:layout_width="match_parent"
+                android:hint="Tag Name"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:padding="16dp"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textColor="@color/black"
+            />
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <TextView
             android:id="@+id/add_tag"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_border"
@@ -109,11 +125,10 @@
             android:paddingEnd="32dp"
             android:paddingBottom="16dp"
             android:text=" Add Tag "
-            style="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/tag_name"
+            app:layout_constraintStart_toEndOf="@+id/tag_name_text_input"
             app:layout_constraintTop_toBottomOf="@id/decrement" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -122,12 +137,13 @@
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/add_tag"
+            android:clipToPadding="false"
             app:layout_constraintBottom_toTopOf="@id/save_button"
-            android:clipToPadding="false"/>
+            app:layout_constraintTop_toBottomOf="@+id/add_tag" />
 
         <TextView
             android:id="@+id/save_button"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -139,8 +155,6 @@
             android:paddingBottom="16dp"
             android:text=" Save"
             android:textColor="@color/black"
-            style="@style/TextAppearance.AppCompat.Medium"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/reset_button"
             app:layout_constraintHorizontal_bias="0.5"
@@ -148,6 +162,7 @@
 
         <TextView
             android:id="@+id/reset_button"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -159,18 +174,18 @@
             android:paddingBottom="16dp"
             android:text=" Reset "
             android:textColor="@color/black"
-            style="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/goto_button"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/save_button"
-         />
+            app:layout_constraintStart_toEndOf="@+id/save_button" />
 
         <TextView
             android:id="@+id/goto_button"
+            style="@style/TextAppearance.AppCompat.Medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/button_background"
             android:paddingStart="32dp"
@@ -178,15 +193,12 @@
             android:paddingEnd="32dp"
             android:paddingBottom="16dp"
             android:text=" Go To"
-            android:layout_marginEnd="16dp"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
-            style="@style/TextAppearance.AppCompat.Medium"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/reset_button"
-            />
+            app:layout_constraintStart_toEndOf="@+id/reset_button" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

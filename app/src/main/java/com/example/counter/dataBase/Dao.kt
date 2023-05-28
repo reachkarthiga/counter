@@ -71,4 +71,7 @@ interface  TagDao {
     @Query("DELETE from tags where counterName = :name")
     fun deleteTagByCounter(name: String)
 
+    @Query("UPDATE tags  set counterName = :newName where counterName = :oldName")
+    fun updateAllTagsByCounter(oldName: String, newName: String)
+
 }

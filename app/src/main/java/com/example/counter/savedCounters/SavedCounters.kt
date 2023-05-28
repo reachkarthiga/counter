@@ -42,12 +42,20 @@ class SavedCounters : Fragment() {
             replaceFragment(CounterPage())
         })
 
+        binding.progressCircular.visibility = VISIBLE
+        binding.noCounterData.visibility = INVISIBLE
+        binding.recyclerViewCounters.visibility = INVISIBLE
+
         viewModel.counterList.observe(viewLifecycleOwner, Observer {
+
+            binding.progressCircular.visibility = INVISIBLE
 
             if (it.isEmpty()) {
                 binding.noCounterData.visibility = VISIBLE
             } else {
                 binding.noCounterData.visibility = INVISIBLE
+                binding.recyclerViewCounters.visibility = VISIBLE
+
             }
 
             adapter.submitList(it)
@@ -158,6 +166,7 @@ class SavedCounters : Fragment() {
         val view = HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
 
         view.heading.text = "Edit Counter"
+        view.edittextBox.hint = "Counter Name"
         view.edittext.setText(counter.name)
         view.button.text = "Save"
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
@@ -167,10 +176,17 @@ class SavedCounters : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
+
             if (view.edittext.text.toString().trim().isEmpty()) {
-                sendMessage("Counter Name is Mandator")
+                sendMessage("Counter Name is Mandatory")
                 return@setOnClickListener
             }
+
+            if (!viewModel.checkCounterAvailability(view.edittext.text.toString().trim())) {
+                sendMessage("There is another counter with this name! Pls change the name!")
+                return@setOnClickListener
+            }
+
             viewModel.updateCounter(counter,
                 Counter(
                     view.edittext.text.toString(),
@@ -196,7 +212,7 @@ class SavedCounters : Fragment() {
         val view = HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
 
         view.heading.text = "Add Counter"
-        view.edittext.hint = "Counter Name"
+        view.edittextBox.hint = "Counter Name"
         view.button.text = "Save"
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
@@ -205,8 +221,14 @@ class SavedCounters : Fragment() {
         builder.show()
 
         view.button.setOnClickListener {
+
             if (view.edittext.text.toString().trim().isEmpty()) {
                 sendMessage("Counter Name is Mandatory")
+                return@setOnClickListener
+            }
+
+            if (!viewModel.checkCounterAvailability(view.edittext.text.toString().trim())) {
+                sendMessage("There is another counter with this name! Pls change the name!")
                 return@setOnClickListener
             }
 

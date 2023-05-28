@@ -17,6 +17,8 @@ class CounterViewModel(application: Application) : ViewModel() {
 
     var count = MutableLiveData<Int>()
 
+    var tempTagList = mutableListOf<Tags>()
+
     private val database = Database.getInstance(application.applicationContext)
 
     private val sharedPreferences = application.getSharedPreferences(SETTINGS, Context.MODE_PRIVATE)
@@ -44,6 +46,8 @@ class CounterViewModel(application: Application) : ViewModel() {
             }
         }
 
+    val showToastOnMaxiCount = MutableLiveData<Boolean>()
+
     init {
 
         counterNameSelected.value = TEMPORARY_COUNTER
@@ -55,6 +59,9 @@ class CounterViewModel(application: Application) : ViewModel() {
 
         if ((count.value?.toInt() ?: 0) < 9999) {
             count.value = count.value?.plus(steps)
+            showToastOnMaxiCount.value = false
+        } else {
+            showToastOnMaxiCount.value = true
         }
 
         if (counterNameSelected.value != TEMPORARY_COUNTER) {
@@ -169,7 +176,7 @@ class CounterViewModel(application: Application) : ViewModel() {
         }
 
         if (counter.name == counterNameSelected.value.toString()) {
-            counterNameSelected.value = ""
+            counterNameSelected.value = TEMPORARY_COUNTER
             count.value = 0
         }
 
@@ -182,9 +189,7 @@ class CounterViewModel(application: Application) : ViewModel() {
         }
 
         viewModelScope.launch {
-            database.tagDao.getTagsByName(oldCounter.name).value?.forEach {
-                database.tagDao.updateTag(Tags(it.tagName, it.count, newCounter.name, it.id))
-            }
+            database.tagDao.updateAllTagsByCounter(oldCounter.name, newCounter.name)
         }
 
         if (oldCounter.name == counterNameSelected.value) {
@@ -203,6 +208,10 @@ class CounterViewModel(application: Application) : ViewModel() {
         viewModelScope.launch {
             database.tagDao.updateTag(tag)
         }
+    }
+
+    fun checkCounterAvailability(newCounterName: String): Boolean {
+        return database.counterDao.getCounterByName(newCounterName)?.toString().isNullOrBlank()
     }
 
 }

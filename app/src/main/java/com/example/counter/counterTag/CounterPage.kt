@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.example.counter.R
 import com.example.counter.databinding.FragmentCounterPageBinding
@@ -31,8 +30,7 @@ class CounterPage : Fragment() {
 
     private val viewModel: CounterViewModel by inject()
     private lateinit var mediaPlayer: MediaPlayer
-    private lateinit var adapter: TagAdapter
-    private lateinit var list: MutableList<Tags>
+    private val adapter: TagAdapter = TagAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,15 +85,19 @@ class CounterPage : Fragment() {
             }
         }
 
-        adapter = TagAdapter()
         val layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
         binding.tagList.adapter = adapter
-        
+
         viewModel.tagList.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
+            if (viewModel.counterNameSelected.value != TEMPORARY_COUNTER) {
+                adapter.submitList(it.toMutableList())
+            }
         })
 
+        if (viewModel.tempTagList.isNotEmpty() && viewModel.counterNameSelected.value == TEMPORARY_COUNTER) {
+            adapter.submitList(viewModel.tempTagList)
+        }
 
         val callBack = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -110,19 +112,15 @@ class CounterPage : Fragment() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 
+                val tag = adapter.getTag(viewHolder.bindingAdapterPosition)
 
                 when (direction) {
 
                     ItemTouchHelper.LEFT -> {
 
-                        val tag = adapter.getTag(viewHolder.bindingAdapterPosition)
-
                         if (tag.counterName == TEMPORARY_COUNTER) {
-
-                            list = adapter.currentList.toMutableList()
-                            list.remove(tag)
-                            adapter.submitList(list)
-
+                            viewModel.tempTagList.remove(tag)
+                            adapter.submitList(viewModel.tempTagList)
                         } else {
                             viewModel.deleteTag(tag)
                         }
@@ -131,11 +129,13 @@ class CounterPage : Fragment() {
 
                     ItemTouchHelper.RIGHT -> {
 
-                        list = adapter.currentList.toMutableList()
-                        list.removeAt(viewHolder.bindingAdapterPosition)
-                        adapter.submitList(list)
-
-                        showEditTagDialog(adapter.getTag(viewHolder.bindingAdapterPosition))
+                        if (tag.counterName == TEMPORARY_COUNTER) {
+                            viewModel.tempTagList.removeAt(viewHolder.bindingAdapterPosition)
+                            showEditTagDialog(tag)
+                            adapter.submitList(viewModel.tempTagList)
+                        } else {
+                            showEditTagDialog(tag)
+                        }
 
                     }
                 }
@@ -205,8 +205,7 @@ class CounterPage : Fragment() {
                 return@setOnClickListener
             }
 
-            if (adapter.currentList.toMutableList().filter { it.count == viewModel.count.value }
-                    .isNotEmpty()) {
+            if (adapter.currentList.toMutableList().any { it.count == viewModel.count.value }) {
                 sendMessage("Count value already Tagged")
                 binding.tagName.text?.clear()
                 inputManager.hideSoftInputFromWindow(view?.windowToken, 0)
@@ -217,9 +216,7 @@ class CounterPage : Fragment() {
 
                 TEMPORARY_COUNTER -> {
 
-                    list = adapter.currentList.toMutableList()
-
-                    list.add(
+                    viewModel.tempTagList.add(
                         Tags(
                             binding.tagName.text.toString(),
                             binding.countValue.text.toString().toInt(),
@@ -228,8 +225,7 @@ class CounterPage : Fragment() {
                         )
                     )
 
-                    adapter.submitList(list)
-
+                    adapter.submitList(viewModel.tempTagList)
                 }
 
                 else -> {
@@ -248,10 +244,16 @@ class CounterPage : Fragment() {
 
             binding.tagName.text?.clear()
             inputManager.hideSoftInputFromWindow(view?.windowToken, 0)
+            binding.tagName.clearFocus()
 
 
         }
 
+        viewModel.showToastOnMaxiCount.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                sendMessage("Count Maximum Value reached. Create a new counter to continue Counting!")
+            }
+        })
 
         return binding.root
 
@@ -267,6 +269,7 @@ class CounterPage : Fragment() {
         val view = HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
 
         view.heading.text = "Edit Tag"
+        view.edittextBox.hint = "Tag Name"
         view.edittext.setText(tag.tagName)
         view.button.text = "Save"
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
@@ -284,8 +287,7 @@ class CounterPage : Fragment() {
 
             if (tag.counterName == TEMPORARY_COUNTER) {
 
-                list = adapter.currentList.toMutableList()
-                list.add(
+                viewModel.tempTagList.add(
                     Tags(
                         view.edittext.text.toString().trim(),
                         tag.count,
@@ -293,6 +295,8 @@ class CounterPage : Fragment() {
                         tag.id
                     )
                 )
+
+                adapter.submitList(viewModel.tempTagList)
 
             } else {
                 viewModel.updateTag(
@@ -325,9 +329,8 @@ class CounterPage : Fragment() {
                 viewModel.clearTags()
             } else {
                 viewModel.count.value = 0
-                list = adapter.currentList.toMutableList()
-                list.clear()
-                adapter.submitList(list)
+                viewModel.tempTagList.clear()
+                adapter.submitList(viewModel.tempTagList)
             }
 
         })
@@ -340,9 +343,8 @@ class CounterPage : Fragment() {
             if (viewModel.counterNameSelected.value != TEMPORARY_COUNTER) {
                 viewModel.clearTags()
             } else {
-                list = adapter.currentList.toMutableList()
-                list.clear()
-                adapter.submitList(list)
+                viewModel.tempTagList.clear()
+                adapter.submitList(viewModel.tempTagList)
             }
         })
 
@@ -357,7 +359,7 @@ class CounterPage : Fragment() {
             HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
 
         view.heading.text = "Go To"
-        view.edittext.hint = "Counter Value"
+        view.edittextBox.hint = "Counter Value"
         view.button.text = "Done"
         view.edittext.inputType = InputType.TYPE_CLASS_NUMBER
 
@@ -369,6 +371,11 @@ class CounterPage : Fragment() {
 
             if (view.edittext.text.toString().isEmpty()) {
                 sendMessage("Counter Value is Mandatory")
+                return@setOnClickListener
+            }
+
+            if (view.edittext.text.toString().toInt() >= 9999) {
+                sendMessage("Maximum Counter value is 9999. Can't increase more!")
                 return@setOnClickListener
             }
 
@@ -385,7 +392,7 @@ class CounterPage : Fragment() {
         val view = HeadingEdittextButtonDialogBinding.inflate(layoutInflater)
 
         view.heading.text = "Add Counter"
-        view.edittext.hint = "Counter Name"
+        view.edittextBox.hint = "Counter Name"
         view.button.text = "Save"
         view.edittext.inputType = InputType.TYPE_TEXT_FLAG_CAP_WORDS
 
@@ -400,13 +407,12 @@ class CounterPage : Fragment() {
                 return@setOnClickListener
             }
 
-            adapter.currentList.forEach {
+            viewModel.tempTagList.forEach {
                 viewModel.saveTag(it.tagName, it.count, view.edittext.text.toString().trim())
             }
 
-            list = adapter.currentList.toMutableList()
-            list.clear()
-            adapter.submitList(list)
+            viewModel.tempTagList.clear()
+            adapter.submitList(viewModel.tempTagList)
 
             viewModel.saveCounter(view.edittext.text.toString())
             builder.dismiss()

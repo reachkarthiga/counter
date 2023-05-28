@@ -6,6 +6,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/Users/bharathank/AndroidStudioProjects/Android_Keystore')
+            keyAlias 'counter_app'
+            keyPassword 'athiyan@0605'
+            storePassword 'athiyan@0605'
+        }
+    }
     compileSdk 33
 
     defaultConfig {
@@ -16,6 +24,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {

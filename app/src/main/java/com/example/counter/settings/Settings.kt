@@ -3,6 +3,7 @@ package com.example.counter.settings
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -59,6 +60,8 @@ class Settings : Fragment() {
                 counterViewModel.playSound = false
             }
         }
+
+        binding.appInfo3.movementMethod = LinkMovementMethod.getInstance()
 
         return binding.root
     }
