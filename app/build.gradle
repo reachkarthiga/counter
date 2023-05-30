@@ -17,7 +17,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.counter"
+        applicationId "com.karthiga.personal.counter"
         minSdk 26
         targetSdk 33
         versionCode 1

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Counter</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="no_data_counters">No Saved Counters</string>
     <string name="app_icon_credits"><a href = "https://www.flaticon.com/free-icons/steps">App Icon Created by Freepik - Flaticon</a></string>
+    <string name="hotpot_ai"><a href = "https://hotpot.ai/">Feature Graphic designed by Hotpot.ai</a></string>
 </resources>

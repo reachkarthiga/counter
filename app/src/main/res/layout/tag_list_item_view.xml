@@ -7,7 +7,7 @@
     <data>
         <variable
             name="item"
-            type="com.example.counter.models.Tags" />
+            type="com.personal_app.counter.models.Tags" />
     </data>
 
 
@@ -24,8 +24,7 @@
 
         <TextView
             android:id="@+id/tag_name"
-            android:textColor = "@color/black"
-            style="@style/TextAppearance.AppCompat.Medium"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:text="@{item.tagName}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,8 +33,7 @@
 
         <TextView
             android:id="@+id/tag_count"
-            android:textColor = "@color/black"
-            style="@style/TextAppearance.AppCompat.Medium"
+            style="@style/TextAppearance.MaterialComponents.Body1"
             android:text="@{String.valueOf(item.count)}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -6,11 +6,11 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.counter.models.Counter" />
+            type="com.personal_app.counter.models.Counter" />
 
         <variable
             name="clickListener"
-            type="com.example.counter.savedCounters.CounterClickListener" />
+            type="com.personal_app.counter.savedCounters.CounterClickListener" />
     </data>
 
     <LinearLayout
@@ -27,8 +27,7 @@
         android:id = "@+id/counter_name"
         tools:text = "Sample counter"
         android:text = "@{viewModel.name}"
-        android:textColor = "@color/black"
-        style="@style/TextAppearance.AppCompat.Medium"
+        style="@style/TextAppearance.MaterialComponents.Body1"
 
         />
 
@@ -39,8 +38,7 @@
         android:layout_height="wrap_content"
         android:id = "@+id/counter_count"
         tools:text = "42"
-        android:textColor = "@color/black"
-        style="@style/TextAppearance.AppCompat.Medium"
+        style="@style/TextAppearance.MaterialComponents.Body1"
         android:text="@{String.valueOf(viewModel.count)}"
 
        />

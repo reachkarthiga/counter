@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="color_primary">#1D314C</color>
     <color name="color_secondary">#526D82</color>
     <color name="color_button">#9DB2BF</color>
@@ -8,4 +8,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#892205</color>
     <color name="green">#496446</color>
+
 </resources>
+

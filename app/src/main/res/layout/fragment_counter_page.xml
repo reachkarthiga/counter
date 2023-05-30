@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".counterTag.CounterPage">
+    tools:context="com.personal_app.counter.counterTag.CounterPage">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.example.counter.counterTag.CounterViewModel" />
+            type="com.personal_app.counter.counterTag.CounterViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/counter_name"
-            style="@style/TextAppearance.Material3.HeadlineSmall"
+            style="@style/TextAppearance.MaterialComponents.Headline5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -43,8 +43,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            style="@style/TextAppearance.MaterialComponents.Headline5"
             android:text="@{String.valueOf(viewModel.count)}"
-            android:textColor="@color/black"
             android:textSize="100sp"
             app:layout_constraintTop_toBottomOf="@+id/counter_name"
             tools:text="2" />
@@ -57,8 +57,8 @@
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="-"
-            android:textColor="@color/black"
             android:textSize="80sp"
+            style="@style/TextAppearance.MaterialComponents.Headline5"
             app:layout_constraintDimensionRatio=""
             app:layout_constraintEnd_toStartOf="@+id/increment"
             app:layout_constraintHorizontal_bias="0.5"
@@ -73,8 +73,8 @@
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
             android:text="+"
-            android:textColor="@color/black"
             android:textSize="80sp"
+            style="@style/TextAppearance.MaterialComponents.Headline5"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/decrement"
@@ -86,6 +86,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:boxStrokeWidth="1dp"
+            app:boxStrokeColor="@drawable/edittext_color"
+            app:hintTextColor="?attr/colorOnTertiary"
+            android:textColorHint="?attr/colorOnSecondary"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="@+id/add_tag"
@@ -101,10 +104,12 @@
                 android:hint="Tag Name"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:maxLength="20"
+                app:maxLines = "1"
                 android:padding="16dp"
+                style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_height="wrap_content"
                 android:inputType="textCapWords"
-                android:textColor="@color/black"
             />
 
 
